@@ -69,8 +69,8 @@ def delete_user(user_id):
 
 
 
-@app.route('/user/favorites', methods=['GET'])              #GET USER FAVORITE
-def handle_hello_favorites():
+@app.route('/user/<int:id>/favorites', methods=['GET'])              #GET USER FAVORITE
+def handle_hello_favorites(id):
     response_body = {
         "msg": "Hello, this is your GET /user/favorites response "
     }

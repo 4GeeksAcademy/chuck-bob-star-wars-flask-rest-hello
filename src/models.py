@@ -18,26 +18,6 @@ class User(db.Model):
             # do not serialize the password, its a security breach
         }
 
-class Favorite(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    people_id = db.Column(db.Integer, db.ForeignKey('people.id'))
-    planets_id = db.Column(db.Integer, db.ForeignKey('planets.id'))
-
-    def __repr__(self):
-        return '<Favorite %r>' % self.username
-
-    def serialize(self):
-        return {
-            "id": self.id,
-            "user_id": self.user_id,
-            "people_id": self.people_id,
-            "planets_id": self.planets_id
-            # do not serialize the password, its a security breach
-        }
-
-
-
 
 class People(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -77,6 +57,23 @@ class Planets(db.Model):
 
 
 
+class Favorite(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    people_id = db.Column(db.Integer, db.ForeignKey('people.id'))
+    planets_id = db.Column(db.Integer, db.ForeignKey('planets.id'))
+
+    def __repr__(self):
+        return '<Favorite %r>' % self.username
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "people_id": self.people_id,
+            "planets_id": self.planets_id
+            # do not serialize the password, its a security breach
+        }
 
 
 
