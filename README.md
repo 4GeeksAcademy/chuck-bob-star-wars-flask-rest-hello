@@ -64,3 +64,62 @@ This boilerplate it's 100% read to deploy with Render.com and Herkou in a matter
 This template was built as part of the 4Geeks Academy [Coding Bootcamp](https://4geeksacademy.com/us/coding-bootcamp) by [Alejandro Sanchez](https://twitter.com/alesanchezr) and many other contributors. Find out more about our [Full Stack Developer Course](https://4geeksacademy.com/us/coding-bootcamps/part-time-full-stack-developer), and [Data Science Bootcamp](https://4geeksacademy.com/us/coding-bootcamps/datascience-machine-learning).
 
 You can find other templates and resources like this at the [school github page](https://github.com/4geeksacademy/).
+
+
+# ROUTES
+
+### GET User
+/user
+
+### POST New User
+/user
+{
+        "email": "Jim@markeemusic.com",
+        "password": "hellobob",
+        "is_active": true
+}
+
+### DELETE User
+/user/<int:id>
+
+
+
+
+### GET All people (character)
+/people
+
+### GET Specific person (character)
+/people/<int:people_id>
+
+### DELETE Specific person (character)
+/people/<int:people_id>
+
+
+
+
+### GET All Planets
+/planets
+
+### GET Specific person (character)
+/planets/<int:planets_id>
+
+### DELETE Specific person (character)
+/planets/<int:planets_id>
+
+
+
+
+### GET Favorite
+/user/<int:id>/favorites
+
+### POST Favorite
+/user/<int:id>/favorites
+
+    {
+        "name": "Luke Skywalker",
+        "people_id": 1,
+        "planets_id": null
+    }
+
+### DELETE Favorite
+/user/<int:user_id>/favorites/<int:favorite_id>

@@ -1,0 +1,56 @@
+GET User
+/user
+
+POST New User
+/user
+{
+        "email": "Jim@markeemusic.com",
+        "password": "hellobob",
+        "is_active": true
+}
+
+DELETE User
+/user/<int:id>
+
+
+
+
+GET All people (character)
+/people
+
+GET Specific person (character)
+/people/<int:people_id>
+
+DELETE Specific person (character)
+/people/<int:people_id>
+
+
+
+
+GET All Planets
+/planets
+
+GET Specific person (character)
+/planets/<int:planets_id>
+
+DELETE Specific person (character)
+/planets/<int:planets_id>
+
+
+
+
+GET Favorite
+/user/<int:id>/favorites
+
+POST Favorite
+/user/<int:id>/favorites
+
+    {
+        "name": "Luke Skywalker",
+        "people_id": 1,
+        "planets_id": null
+    }
+
+DELETE Favorite
+/user/<int:user_id>/favorites/<int:favorite_id>
+

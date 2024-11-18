@@ -68,34 +68,57 @@ def delete_user(user_id):
 
 
 
-@app.route('/user/<int:id>/favorites', methods=['GET'])              #GET USER FAVORITE
+
+
+
+@app.route('/user/<int:id>/favorites', methods=['GET'])         #GET USER FAVORITE
 def handle_hello_favorites(id):
-    favs = Favorite.query.all()        # Query all favs from the database
-    response_body = [               # Format favs into a list of dictionaries
+    favs = Favorite.query.all()                                 # Query all favs from the database
+    response_body = [                                           # Format favs into a list of dictionaries
         {"id": favorite.id, 
          "name": favorite.name, 
-         "people": favorite.people,
-         "planets": favorite.planets
+         "people_id": favorite.people_id,
+         "planets_id": favorite.planets_id
          }
          for favorite in favs
     ]
-    return jsonify(response_body), 200  # Return the response
+    return jsonify(response_body), 200                          # Return the response
 
-@app.route('/user/<int:id>/favorites', methods=['POST'])  # POST request to add a new favorite
-def add_new_favorite(id):
-    request_body = request.json  # Get the JSON body from the request
-    # Extract relevant data from the request body
-    name = request_body.get("name")
-    people_id = request_body.get("people_id")  # ID of the person to be added as favorite
-    planets_id = request_body.get("planets_id")  # ID of the planet to be added as favorite
-    # Create a new Favorite entry
-    favorite = Favorite(name=name, user_id=id, people_id=people_id, planets_id=planets_id)
-    # Add the new favorite to the database and commit
-    db.session.add(favorite)
-    db.session.commit()
-    # Return a success response
-    return jsonify({"message": "Favorite added successfully", "favorite": {"user_id": id, "people_id": people_id, "planets_id": planets_id}}), 201
 
+
+
+
+@app.route('/user/<int:id>/favorites', methods=['POST'])    # POST request to add a favorite
+def add_favorite(id):
+    request_body = request.json                             # Get the JSON body from the request
+                                                            # Extract relevant data from the request body
+    name = request_body.get("name")                         # Name of the favorite
+    people_id = request_body.get("people_id")               # ID of the favorite person (optional)
+    planets_id = request_body.get("planets_id")             # ID of the favorite planet (optional)
+    
+    new_favorite = Favorite(                                # Create a new Favorite instance
+        name=name,
+        user_id=id,                         # Associate the favorite with the user ID from the URL
+        people_id=people_id,
+        planets_id=planets_id
+    )
+    
+    db.session.add(new_favorite)  # Add the new favorite to the database
+    db.session.commit()  # Commit the changes to the database
+
+    # Return a success response with the serialized favorite
+    return jsonify({
+        "message": "Favorite added successfully",
+        "favorite": new_favorite.serialize()  # Serialize the new favorite for the response
+    }), 201
+
+
+@app.route('/user/<int:user_id>/favorites/<int:favorite_id>', methods=['DELETE'])   #FAVORITE DELETE    
+def delete_favorite(user_id, favorite_id):
+    favorite = Favorite.query.get(favorite_id)                                      # Fetch the favorite by ID
+    db.session.delete(favorite)                                                     # Delete the favorite from the database
+    db.session.commit()                                                             # Commit the deletion
+    return jsonify({"message": "Favorite deleted successfully"}), 200               # Return a success message
 
 
 
@@ -143,7 +166,7 @@ def get_all_planets():
 
 @app.route('/planets/<int:planet_id>', methods=['GET'])      # GET request for a single PLANET
 def get_single_planet(planet_id):
-    planet = People.query.get(planet_id)                    # Fetch a single planet by their ID
+    planet = Planets.query.get(planet_id)                    # Fetch a single planet by their ID
     response_body = {                                       # Convert the planet object to a dictionary
         "id": planet.id,                                    # Include the planet's ID
         "name": planet.name,                                # Include the planet's name
