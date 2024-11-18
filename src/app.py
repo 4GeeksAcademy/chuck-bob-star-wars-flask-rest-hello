@@ -1,7 +1,7 @@
 """
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
-import os
+import os, requests
 from flask import Flask, request, jsonify, url_for
 from flask_migrate import Migrate
 from flask_swagger import swagger
@@ -68,13 +68,38 @@ def delete_user(user_id):
 
 
 
-
 @app.route('/user/<int:id>/favorites', methods=['GET'])              #GET USER FAVORITE
 def handle_hello_favorites(id):
-    response_body = {
-        "msg": "Hello, this is your GET /user/favorites response "
-    }
-    return jsonify(response_body), 200
+    favs = Favorite.query.all()        # Query all favs from the database
+    response_body = [               # Format favs into a list of dictionaries
+        {"id": favorite.id, 
+         "name": favorite.name, 
+         "people": favorite.people,
+         "planets": favorite.planets
+         }
+         for favorite in favs
+    ]
+    return jsonify(response_body), 200  # Return the response
+
+@app.route('/user/<int:id>/favorites', methods=['POST'])  # POST request to add a new favorite
+def add_new_favorite(id):
+    request_body = request.json  # Get the JSON body from the request
+    # Extract relevant data from the request body
+    name = request_body.get("name")
+    people_id = request_body.get("people_id")  # ID of the person to be added as favorite
+    planets_id = request_body.get("planets_id")  # ID of the planet to be added as favorite
+    # Create a new Favorite entry
+    favorite = Favorite(name=name, user_id=id, people_id=people_id, planets_id=planets_id)
+    # Add the new favorite to the database and commit
+    db.session.add(favorite)
+    db.session.commit()
+    # Return a success response
+    return jsonify({"message": "Favorite added successfully", "favorite": {"user_id": id, "people_id": people_id, "planets_id": planets_id}}), 201
+
+
+
+
+
 
 
 
@@ -109,11 +134,11 @@ def delete_person(person_id):
 
 
 
-@app.route('/planets', methods=['GET'])                      #GET ALL PLANETS
+@app.route('/planets', methods=['GET'])                             #GET ALL PLANETS
 def get_all_planets():
-    all_planets = Planets.query.all()  # Fetch all records from the People table
+    all_planets = Planets.query.all()                               #Fetch all records from the People table
     all_planets = list(map(lambda x: x.serialize(), all_planets))
-    return jsonify(all_planets), 200  # Return the list of people as a JSON response
+    return jsonify(all_planets), 200                                # Return the list of people as a JSON response
 
 
 @app.route('/planets/<int:planet_id>', methods=['GET'])      # GET request for a single PLANET
@@ -126,6 +151,44 @@ def get_single_planet(planet_id):
     }
     return jsonify(response_body), 200                      # Return the person's data as a JSON response
 
+
+
+
+
+@app.route('/get/initial', methods=['GET'])
+def initial():
+    peeps = People.query.all() 
+    if not peeps:
+        response = requests.get("https://swapi.dev/api/people/")
+        people = response.json()['results']
+
+        for pers in people:
+            char_id = pers['url'].split('/')[-2]
+            char = People(name = pers['name'], url=pers['url'])
+
+            db.session.add(char)
+            db.session.commit()
+
+    people_records = People.query.all()
+    people_records = list(map(lambda x: x.serialize(), people_records))
+
+    planetz = Planets.query.all() 
+    if not planetz:
+        response = requests.get("https://swapi.dev/api/planets/")
+        planets = response.json()['results']
+
+        for planet in planets:
+            char_id = planet['url'].split('/')[-2]
+            char = Planets(name = planet['name'], url=planet['url'])
+
+            db.session.add(char)
+            db.session.commit()
+
+    planet_records = Planets.query.all()
+    planet_records = list(map(lambda x: x.serialize(), planet_records))
+
+
+    return jsonify(people_records + planet_records), 201
 
 
 
