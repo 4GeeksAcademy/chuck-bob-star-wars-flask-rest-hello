@@ -75,7 +75,8 @@ def delete_user(user_id):
 
 @app.route('/user/<int:id>/favorites', methods=['GET'])         #GET USER FAVORITE
 def handle_hello_favorites(id):
-    favs = Favorite.query.all()                                 # Query all favs from the database
+    favs = Favorite.query.filter_by(user_id=id)
+                                     # Query all favs from the database
     response_body = [                                           # Format favs into a list of dictionaries
         {"id": favorite.id, 
          "name": favorite.name, 
