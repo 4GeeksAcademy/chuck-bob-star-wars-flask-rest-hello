@@ -67,24 +67,24 @@ You can find other templates and resources like this at the [school github page]
 
 
 # ROUTES
-
+## USER
 ### GET User
 /user
 
 ### POST New User
 /user
-{
-        "email": "Jim@markeemusic.com",
-        "password": "hellobob",
-        "is_active": true
-}
+    {
+        "email": "",
+        "password": "",
+        "is_active": true/false
+    }
 
 ### DELETE User
 /user/<int:id>
 
 
 
-
+## CHARACTER
 ### GET All people (character)
 /people
 
@@ -96,7 +96,7 @@ You can find other templates and resources like this at the [school github page]
 
 
 
-
+## PLANETS
 ### GET All Planets
 /planets
 
@@ -108,7 +108,7 @@ You can find other templates and resources like this at the [school github page]
 
 
 
-
+## FAVORITES
 ### GET Favorite
 /user/<int:id>/favorites
 

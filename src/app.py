@@ -59,6 +59,8 @@ def add_new_user():
     return jsonify({"message": "User added successfully", "user": {"email": email, "is_active": is_active}}), 201
 
 
+
+
 @app.route('/user/<int:user_id>', methods=['DELETE'])  #USER DELETE    
 def delete_user(user_id):
     user = User.query.get(user_id)                  # Fetch the user by ID
@@ -209,9 +211,52 @@ def initial():
 
     planet_records = Planets.query.all()
     planet_records = list(map(lambda x: x.serialize(), planet_records))
+    response= {"people_records":people_records, "planet_records":planet_records}
+
+    return jsonify(response), 201
 
 
-    return jsonify(people_records + planet_records), 201
+
+
+
+@app.route('/login', methods=['POST'])
+def login_user():
+    try:
+        # Parse JSON request body
+        request_body = request.json
+        email = request_body.get("email")
+        password = request_body.get("password")
+
+        # Validate inputs
+        if not email or not password:
+            return jsonify({"message": "Email and password are required"}), 400
+
+        # Find user by email
+        user = User.query.filter_by(email=email).first()
+        if not user:
+            return jsonify({"message": "User not found"}), 404
+
+        # Check password
+        if user.password != password:
+            return jsonify({"message": "Invalid credentials"}), 401
+
+        # Login successful
+        return jsonify({"message": "Login successful", "user":user.serialize()}), 200
+    except Exception as e:
+        print("Error during login:", e)  # Log any exception for debugging
+        return jsonify({"message": "Internal Server Error"}), 500
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
